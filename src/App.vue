@@ -1,12 +1,48 @@
 <script setup>
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
-import HelloWorld from './components/HelloWorld.vue'
+import { ref, onBeforeMount } from 'vue';
+import { getFirestore, query, doc, getDocs, addDoc, collection } from 'firebase/firestore';
+
+const users = ref([]);
+const db = getFirestore();
+
+onBeforeMount(async () => {
+  const usersRef = collection(db, 'users');
+  const querySnapshot = await getDocs(usersRef);
+
+  users.value = [];
+  querySnapshot.forEach((doc) => {
+    console.log(doc.id, ' => ', doc.data());
+    users.value.push(doc.data());
+  });
+  console.log(users.value);
+});
+
+const addUser = async () => {
+  const userData = {
+    name: `test ${new Date().toLocaleString()}`,
+    email: 'test@example.com',
+  };
+
+  const userProfileData = {
+    age: 18,
+    prefecture: 'Hyogo',
+  };
+
+  const user = await addDoc(collection(db, 'users'), userData);
+  console.log(user.id);
+  const userProfile = await addDoc(collection(db, 'users', user.id, 'profiles'), userProfileData);
+};
 </script>
 
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Hello Vue 3 + Vite" />
+  <div>
+    <h1>Firestore Practice</h1>
+    <div>
+      <h2>ユーザー一覧</h2>
+      <div>{{ users }}</div>
+      <button @click="addUser">ユーザーを追加する</button>
+    </div>
+  </div>
 </template>
 
 <style>
