@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.0.0",
+    "firebase-tools": "^10.0.1",
     "prettier": "^2.5.1",
     "vite": "^2.7.2"
   }
